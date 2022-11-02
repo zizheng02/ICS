@@ -1,0 +1,109 @@
+    .ORIG X3000
+    AND R1,R1,#0
+    AND R2,R2,#0
+    AND R6,R6,#0
+    LD R1,LEFT
+    LD R2,RIGHT
+    LD R6,START
+;Input
+AGAIN    GETC 
+    OUT
+    AND R3,R3,#0
+    ADD R3,R0,#-10
+    BRZ OVER
+;
+    AND R5,R5,#0
+    ADD R5,R5,R1
+    NOT R5,R5
+    ADD R5,R5,#1
+;
+AND R3,R3,#0
+    LD R3,PLUS
+    ADD R3,R0,R3
+    BRZ PushL
+AND R3,R3,#0
+    LD R3,HYPHEN
+    ADD R3,R0,R3
+    BRZ PopL
+AND R3,R3,#0
+    LD R3,OPENING
+    ADD R3,R0,R3
+    BRZ PushR
+AND R3,R3,#0
+    LD R3,CLOSING
+    ADD R3,R0,R3
+    BRZ PopR
+;SWITCH-SUBROUTINE
+PushL    GETC
+    OUT
+    AND R4,R4,#0
+    ADD R4,R5,R2
+    BRP Normal1
+;
+    STR R0,R1,#0
+    ADD R1,R1,#-1
+    ADD R2,R2,#1
+    BR AGAIN
+Normal1   STR R0,R1,#0
+    ADD R1,R1,#-1
+    BR AGAIN
+;
+PopL  AND R4,R4,#0
+    ADD R4,R5,R2
+    BRZ EMPTY
+    ADD R1,R1,#1
+    AND R7,R7,#0
+    LDR R7,R1,#0
+    STR R7,R6,#0
+    ADD R6,R6,#1
+    ADD R4,R4,#-1
+    BRP UNDEAL1
+    ADD R2,R2,#-1
+UNDEAL1    BR AGAIN
+;
+PushR   GETC
+    OUT
+    AND R4,R4,#0
+    ADD R4,R5,R2
+    BRP Normal2
+;
+    STR R0,R2,#0
+    ADD R1,R1,#-1
+    ADD R2,R2,#1
+    BR AGAIN
+Normal2   STR R0,R2,#0
+    ADD R2,R2,#1
+    BR AGAIN
+;
+PopR    AND R4,R4,#0
+    ADD R4,R5,R2
+    BRZ EMPTY
+    ADD R2,R2,#-1
+    AND R7,R7,#0
+    LDR R7,R2,#0
+    STR R7,R6,#0
+    ADD R6,R6,#1
+    ADD R4,R4,#-1
+    BRP UNDEAL2
+    ADD R1,R1,#1
+UNDEAL2    BR AGAIN
+;
+EMPTY    LD R4,UNDERSCORE
+    STR R4,R6,#0
+    ADD R6,R6,#1
+    BR AGAIN
+;
+OVER    AND R4,R4,#0
+    STR R4,R6,#0
+    LD R6,START
+    PUTS
+    HALT
+LEFT .FILL X3200
+RIGHT .FILL X3200
+UNDERSCORE .FILL #95;_
+PLUS .FILL XFFD5;+
+HYPHEN .FILL XFFD3;-
+OPENING .FILL XFFA5;[
+CLOSING .FILL XFFA3;]
+START .FILL X3300
+.END
